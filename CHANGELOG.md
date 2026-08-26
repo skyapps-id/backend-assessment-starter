@@ -26,10 +26,24 @@ This release addresses critical security vulnerabilities identified in a compreh
 
 ---
 
+#### 2. Weak Password Hashing (MD5) - FIXED ✅
+**Priority:** BLOCKER - Compromises user security  
+**Files Affected:** `src/db.ts`, `src/auth.ts`
+
+**Issue:** Using MD5 for password hashing, which is cryptographically broken and vulnerable to rainbow table attacks, collision attacks, and fast brute force.
+
+**Fix:** Replaced MD5 with bcrypt:
+- Installed `bcrypt` and `@types/bcrypt` dependencies
+- Updated `hashPassword()` function in `src/db.ts` to use bcrypt.hashSync with 10 salt rounds
+- Modified login endpoint in `src/auth.ts` to use `bcrypt.compareSync()` for password verification
+
+**Impact:** Passwords are now properly secured with industry-standard hashing that is resistant to brute force and rainbow table attacks.
+
+---
+
 ## Remaining Critical Issues
 
 ### 🔴 TO BE FIXED
-- [ ] Critical (Blockers) #2: Weak Password Hashing (MD5) - `src/db.ts:21-23`
 - [ ] Critical (Blockers) #3: Authentication Bypass - Note Access - `notes.ts:20-24`  
 - [ ] Critical (Blockers) #4: Hardcoded Secrets - `config.ts:2`
 
@@ -37,8 +51,8 @@ This release addresses critical security vulnerabilities identified in a compreh
 
 ### 📊 SUMMARY
 
-**Critical Fixes Completed:** 1/4  
-**Total Security Fixes:** 1 critical vulnerability fixed  
+**Critical Fixes Completed:** 2/4  
+**Total Security Fixes:** 2 critical vulnerabilities fixed  
 
 ---
 
@@ -46,6 +60,6 @@ This release addresses critical security vulnerabilities identified in a compreh
 
 ### v1.0.0 - Security Hardening Release (2024-08-26)
 - ✅ Fixed SQL injection vulnerabilities  
-- ⏳ Pending: Replace MD5 with bcrypt for password hashing
+- ✅ Replaced MD5 with bcrypt for password hashing
 - ⏳ Pending: Add ownership checks for note access
 - ⏳ Pending: Remove hardcoded secrets and add proper validation

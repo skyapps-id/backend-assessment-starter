@@ -1,5 +1,5 @@
 import Database from "better-sqlite3";
-import crypto from "crypto";
+import bcrypt from "bcrypt";
 import { config } from "./config";
 
 export const db = new Database(config.dbPath);
@@ -19,7 +19,7 @@ db.exec(`
 `);
 
 export function hashPassword(s: string): string {
-  return crypto.createHash("md5").update(s).digest("hex");
+  return bcrypt.hashSync(s, 10);
 }
 
 const count = db.prepare("SELECT COUNT(*) as c FROM users").get() as any;

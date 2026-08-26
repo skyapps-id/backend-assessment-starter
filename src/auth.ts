@@ -1,6 +1,7 @@
 import { Router } from "express";
 import jwt from "jsonwebtoken";
-import { db, hashPassword } from "./db";
+import bcrypt from "bcrypt";
+import { db } from "./db";
 import { config } from "./config";
 
 export const authRouter = Router();
@@ -9,17 +10,19 @@ authRouter.post("/login", (req, res) => {
   const { email, password } = req.body as any;
 
   const row = db
-    .prepare(
-      `SELECT * FROM users WHERE email = ? AND password = ?`
-    )
-    .get(email, hashPassword(password)) as any;
+    .prepare(`SELECT * FROM users WHERE email = ?`)
+    .get(email) as any;
 
   if (!row) {
     return res.status(401).json({ error: "invalid credentials" });
   }
 
+  const passwordMatch = bcrypt.compareSync(password, row.password);
+  if (!passwordMatch) {
+    return res.status(401).json({ error: "invalid credentials" });
+  }
+
   const token = jwt.sign({ userId: row.id, email: row.email }, config.jwtSecret);
-  console.log("issued token for", email, token);
   res.json({ token });
 });
 
