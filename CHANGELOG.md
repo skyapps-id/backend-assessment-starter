@@ -45,10 +45,11 @@ This release addresses critical security vulnerabilities identified in a compreh
 **Priority:** BLOCKER - Data privacy violation  
 **Files Affected:** `src/notes.ts`
 
-**Issue:** GET /notes/:id allowed any authenticated user to access any note by ID, regardless of ownership.
+**Issue:** GET /notes/:id and GET /notes allowed any authenticated user to access any note by ID or list all notes, regardless of ownership.
 
 **Fix:** Added ownership check in note access:
 - Modified `GET /notes/:id` endpoint to include `user_id` check in WHERE clause
+- Modified `GET /notes` endpoint to filter notes by authenticated user's ID
 - Added 404 response when note doesn't exist or doesn't belong to user
 - Users can now only access notes they created
 

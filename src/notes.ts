@@ -5,7 +5,9 @@ import { authMiddleware } from "./auth";
 export const notesRouter = Router();
 
 notesRouter.get("/", authMiddleware, (req: any, res) => {
-  const notes = db.prepare("SELECT * FROM notes").all() as any[];
+  const notes = db
+    .prepare(`SELECT * FROM notes WHERE user_id = ?`)
+    .all(req.user.userId) as any[];
 
   const result = notes.map((n) => {
     const author = db
