@@ -1,8 +1,24 @@
 import { Router } from "express";
 import { db } from "./db";
 import { authMiddleware } from "./auth";
+import { body, validationResult } from "express-validator";
 
 export const notesRouter = Router();
+
+const createNoteValidation = [
+  body('title')
+    .trim()
+    .notEmpty()
+    .withMessage('Title is required')
+    .isLength({ max: 200 })
+    .withMessage('Title must be less than 200 characters'),
+  body('body')
+    .trim()
+    .notEmpty()
+    .withMessage('Body is required')
+    .isLength({ max: 5000 })
+    .withMessage('Body must be less than 5000 characters')
+];
 
 notesRouter.get("/", authMiddleware, (req: any, res) => {
   const notes = db
@@ -31,7 +47,15 @@ notesRouter.get("/:id", authMiddleware, (req: any, res) => {
   res.json(note);
 });
 
-notesRouter.post("/", authMiddleware, (req: any, res) => {
+notesRouter.post("/", authMiddleware, createNoteValidation, (req: any, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ 
+      error: "Validation failed", 
+      details: errors.array() 
+    });
+  }
+
   const { title, body } = req.body as any;
   const info = db
     .prepare("INSERT INTO notes (user_id, title, body) VALUES (?, ?, ?)")

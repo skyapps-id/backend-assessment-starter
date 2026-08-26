@@ -3,10 +3,29 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { db } from "./db";
 import { config } from "./config";
+import { body, validationResult } from "express-validator";
 
 export const authRouter = Router();
 
-authRouter.post("/login", (req, res) => {
+const loginValidation = [
+  body('email')
+    .isEmail()
+    .withMessage('Invalid email format')
+    .normalizeEmail(),
+  body('password')
+    .notEmpty()
+    .withMessage('Password is required')
+];
+
+authRouter.post("/login", loginValidation, (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ 
+      error: "Validation failed", 
+      details: errors.array() 
+    });
+  }
+
   const { email, password } = req.body as any;
 
   const row = db
