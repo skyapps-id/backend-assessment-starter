@@ -84,6 +84,42 @@
 
 ---
 
+## Medium Priority Issues (Nice-to-Have)
+
+### 14. No Request Logging - FIXED ✅
+**Priority:** NICE-TO-HAVE - Observability
+**Files Affected:** `src/logging.ts` (new), `src/index.ts`
+
+**Issue:** No request/response logging for monitoring or debugging, making it difficult to troubleshoot issues or monitor API usage.
+
+**Fix:** Implemented comprehensive request logging system:
+- Created new logging middleware (`src/logging.ts`)
+- Logs all requests with method, path, IP, timestamp
+- Logs responses with status code, response time, user info
+- Redacts sensitive data (tokens, passwords) from logs
+- Added error logging with stack traces in development
+- Structured log format with severity levels [info], [warn], [error]
+- Performance monitoring with response time tracking
+- Dynamic log level based on HTTP status codes
+
+**Log Format Examples:**
+```
+[info] 2024-08-26T14:30:15.123Z | POST /auth/login | IP: 127.0.0.1
+[info] 2024-08-26T14:30:15.456Z | POST /auth/login | Status: 200 | 333ms | User: alice@example.com
+[warn] 2024-08-26T14:30:20.789Z | GET /notes/999 | Status: 404 | 45ms | User: bob@example.com
+[error] 2024-08-26T14:30:25.012Z | GET /unknown | Error: Route not found
+```
+
+**Why this matters:**
+- Debugging and troubleshooting capability
+- Security monitoring and audit trail
+- Performance monitoring and optimization insights
+- User activity tracking for security analysis
+
+**Impact:** Provides full visibility into API operations, security events, and performance metrics while protecting sensitive data.
+
+---
+
 ## All Issues Resolved ✅
 
 ### 🎉 ALL COMPLETED
@@ -96,6 +132,7 @@
 - [x] High Priority #7: Permissive CORS Configuration - FIXED
 - [x] High Priority #8: Error Handling Exposes Stack Traces - FIXED
 - [x] High Priority #9: Authentication Middleware Error - FIXED
+- [x] Medium Priority #14: No Request Logging - FIXED
 
 ---
 
@@ -103,10 +140,12 @@
 
 **Critical Fixes Completed:** 4/4 ✅  
 **High Priority Fixes Completed:** 5/5 ✅  
+**Medium Priority Fixes Completed:** 1/5  
 **Total Security Fixes:** 9/9 vulnerabilities fixed  
-**Files Modified:** 7 core source files  
+**Observability Features:** Request logging, error tracking, performance monitoring  
+**Files Modified:** 8 core source files + 1 new logging file  
 **Dependencies Added:** 3 packages (bcrypt, dotenv, express-validator)  
-**New Features:** Environment-based configuration, comprehensive validation system  
+**New Features:** Environment-based configuration, comprehensive validation, request logging  
 **Security Improvements:** Production-ready CORS, error handling, and input validation
 ## Releases
 
