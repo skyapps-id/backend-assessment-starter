@@ -27,7 +27,11 @@ authRouter.post("/login", (req, res) => {
 });
 
 export function authMiddleware(req: any, res: any, next: any) {
-  const header = req.headers.authorization || "";
+  const header = req.headers.authorization;
+  if (!header || !header.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "unauthorized" });
+  }
+  
   const token = header.replace("Bearer ", "");
   try {
     const payload = jwt.verify(token, config.jwtSecret);
