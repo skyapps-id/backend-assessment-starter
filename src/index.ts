@@ -9,14 +9,22 @@ import { config } from "./config";
 const app = express();
 
 app.use(express.json());
-app.use(cors({ origin: "*", credentials: true }));
+app.use(cors({
+  origin: config.corsOrigins,
+  credentials: true
+}));
 
 app.use("/auth", authRouter);
 app.use("/users", usersRouter);
 app.use("/notes", notesRouter);
 
 app.use((err: any, req: any, res: any, next: any) => {
-  res.status(500).json({ error: err.message, stack: err.stack });
+  // Don't expose stack traces in production
+  const error = config.nodeEnv === 'production' 
+    ? { error: 'Internal server error' }
+    : { error: err.message, stack: err.stack };
+    
+  res.status(500).json(error);
 });
 
 app.listen(config.port, () => {
