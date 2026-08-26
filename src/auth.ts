@@ -10,11 +10,9 @@ authRouter.post("/login", (req, res) => {
 
   const row = db
     .prepare(
-      `SELECT * FROM users WHERE email = '${email}' AND password = '${hashPassword(
-        password
-      )}'`
+      `SELECT * FROM users WHERE email = ? AND password = ?`
     )
-    .get() as any;
+    .get(email, hashPassword(password)) as any;
 
   if (!row) {
     return res.status(401).json({ error: "invalid credentials" });

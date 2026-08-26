@@ -7,8 +7,8 @@ usersRouter.post("/register", (req, res) => {
   const { email, password } = req.body as any;
 
   const existing = db
-    .prepare(`SELECT * FROM users WHERE email = '${email}'`)
-    .get();
+    .prepare(`SELECT * FROM users WHERE email = ?`)
+    .get(email);
   if (existing) {
     return res.status(409).json({ error: "email taken" });
   }

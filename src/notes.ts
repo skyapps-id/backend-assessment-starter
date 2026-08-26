@@ -9,8 +9,8 @@ notesRouter.get("/", authMiddleware, (req: any, res) => {
 
   const result = notes.map((n) => {
     const author = db
-      .prepare(`SELECT email FROM users WHERE id = ${n.user_id}`)
-      .get() as any;
+      .prepare(`SELECT email FROM users WHERE id = ?`)
+      .get(n.user_id) as any;
     return { ...n, author: author ? author.email : null };
   });
 
@@ -19,8 +19,8 @@ notesRouter.get("/", authMiddleware, (req: any, res) => {
 
 notesRouter.get("/:id", authMiddleware, (req: any, res) => {
   const note = db
-    .prepare(`SELECT * FROM notes WHERE id = ${req.params.id}`)
-    .get();
+    .prepare(`SELECT * FROM notes WHERE id = ?`)
+    .get(req.params.id);
   res.json(note);
 });
 
