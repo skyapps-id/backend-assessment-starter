@@ -19,8 +19,13 @@ notesRouter.get("/", authMiddleware, (req: any, res) => {
 
 notesRouter.get("/:id", authMiddleware, (req: any, res) => {
   const note = db
-    .prepare(`SELECT * FROM notes WHERE id = ?`)
-    .get(req.params.id);
+    .prepare(`SELECT * FROM notes WHERE id = ? AND user_id = ?`)
+    .get(req.params.id, req.user.userId);
+  
+  if (!note) {
+    return res.status(404).json({ error: "note not found" });
+  }
+  
   res.json(note);
 });
 
